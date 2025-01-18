@@ -123,6 +123,6 @@ public class CityTaxationService {
 
     private long getMaximumTaxAmountPerDayByCity(String cityName) {
         //todo: improvement - add entity validator to make city name unique and added enums for cities
-        return cityTaxationRepository.findMaximumTaxAmountPerDayByCityName(cityName);
+        return cityTaxationRepository.findMaximumTaxAmountPerDayByCityName(cityName).getMaximumTaxAmountPerDay();
     }
 }

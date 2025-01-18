@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CityTaxationRepository extends JpaRepository<CityTaxationEntity, Long> {
-    long findMaximumTaxAmountPerDayByCityName(String cityName);
+    CityTaxationEntity findMaximumTaxAmountPerDayByCityName(String cityName);
 }

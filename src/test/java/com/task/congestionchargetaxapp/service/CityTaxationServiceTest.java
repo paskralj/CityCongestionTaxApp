@@ -1,5 +1,6 @@
 package com.task.congestionchargetaxapp.service;
 
+import com.task.congestionchargetaxapp.entities.CityTaxationEntity;
 import com.task.congestionchargetaxapp.entities.CongestionTaxEntity;
 import com.task.congestionchargetaxapp.enums.CarType;
 import com.task.congestionchargetaxapp.repository.CityTaxationRepository;
@@ -32,6 +33,7 @@ class CityTaxationServiceTest {
     private List<Timestamp> carTimeStampsWithinADay2;
     private List<Timestamp> carTimeStampsWithinADay3;
     private List<Timestamp> carTimeStampsWithinADay4;
+    private CityTaxationEntity cityTaxationEntity;
     private List<CongestionTaxEntity> congestionTaxRulesList;
 
     @BeforeEach
@@ -73,11 +75,13 @@ class CityTaxationServiceTest {
         carTimeStampsWithinADay4.add(Timestamp.valueOf("2013-07-07 06:23:27"));
         carTimeStampsWithinADay4.add(Timestamp.valueOf("2013-07-07 15:27:00"));
 
+        cityTaxationEntity = new CityTaxationEntity();
+        cityTaxationEntity.setMaximumTaxAmountPerDay(60L);
     }
 
     @Test
     void testCalculateCityCongestionTaxForASingleDay(){
-        when(cityTaxationRepository.findMaximumTaxAmountPerDayByCityName(anyString())).thenReturn(60L);
+        when(cityTaxationRepository.findMaximumTaxAmountPerDayByCityName(anyString())).thenReturn(cityTaxationEntity);
 
         double result1 = cityTaxationService.calculateCityCongestionTaxForASingleDay(carTimeStampsWithinADay1, congestionTaxRulesList, "Gothenburg", CarType.CARPAYINGTAX.getCarType());
         assertEquals(21L, result1);
@@ -88,7 +92,7 @@ class CityTaxationServiceTest {
         double result3 = cityTaxationService.calculateCityCongestionTaxForASingleDay(carTimeStampsWithinADay3, congestionTaxRulesList, "Gothenburg", CarType.CARPAYINGTAX.getCarType());
         assertEquals(8L, result3);
 
-        // Test with exempted from tax - NOPAYINGCAR
+        // Test with exempted from tax - NONPAYINGCAR
         double result4 = cityTaxationService.calculateCityCongestionTaxForASingleDay(carTimeStampsWithinADay3, congestionTaxRulesList, "Gothenburg", CarType.CARNONPAYINGTAX.getCarType());
         assertEquals(0L, result4);
 
@@ -96,14 +100,14 @@ class CityTaxationServiceTest {
         double result5 = cityTaxationService.calculateCityCongestionTaxForASingleDay(carTimeStampsWithinADay4, congestionTaxRulesList, "Gothenburg", CarType.CARPAYINGTAX.getCarType());
         assertEquals(0L, result5);
 
-        // TODO: Add more tests
+        // TODO: Add more tests (Eg. Odd-numbered pass test)
 
     }
 
     private CongestionTaxEntity createTaxEntity(String start, String end, double amount) {
         CongestionTaxEntity entity = new CongestionTaxEntity();
-        entity.setStartTime(LocalTime.parse(start)); // Konvertuje string u LocalTime
-        entity.setEndTime(LocalTime.parse(end)); // Konvertuje string u LocalTime
+        entity.setStartTime(LocalTime.parse(start));
+        entity.setEndTime(LocalTime.parse(end));
         entity.setAmount(amount);
         return entity;
     }
